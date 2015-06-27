@@ -87,7 +87,7 @@ def main():
     most = mixing_options[-1]
 
     if args.bpm and args.range:
-        print "* Tempos are between {}bpm and {}bpm.".format(
+        print "* Tempos are between {} bpm and {} bpm.".format(
                 args.bpm - args.range, args.bpm + args.range)
     print "* A {:5} track can be mixed into only   {:3} other tracks.".format(
         fewest[0], fewest[1])
