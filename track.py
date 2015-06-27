@@ -52,7 +52,7 @@ class Track(object):
 
 def get_bpm(track):
     try:
-        return int(str(track['TBPM']))
+        return int(round(float(str(track['TBPM']))))
     except KeyError:
         raise BpmNotFound
 
