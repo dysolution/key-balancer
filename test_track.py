@@ -2,7 +2,6 @@ import unittest
 
 from track import *
 
-@unittest.skip
 class TestTrack(unittest.TestCase):
 
     def test_bpm(self):
@@ -11,4 +10,4 @@ class TestTrack(unittest.TestCase):
 
     def test_key(self):
         self.assertEqual(get_key({'TKEY': 'Amin'}), 'Amin')
-        self.assertEqual(get_key({'TKEY': ''}), None)
+        self.assertEqual(get_key({'TKEY': ''}), '')
