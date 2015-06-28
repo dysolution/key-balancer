@@ -29,4 +29,4 @@ python key_balancer.py ~/mp3 --bpm=128 --range=4  # matches 124 bpm to 132 bpm
 
 ## Output
 
-![example output](img/sample_output.png?raw=true "Example Output")
+![example output](https://raw.github.com/dysolution/key-balancer/master/img/sample_output.png?raw=true "Example Output")
