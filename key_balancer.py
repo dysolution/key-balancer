@@ -44,13 +44,13 @@ def main():
                 track = Track(full_path)
             except IOError:
                 continue
-            
+
             try:
                 key = KeyFactory.new(track.key)
             except KeyNotFound:
                 print "key missing from metadata for {}".format(full_path)
                 continue
-            
+
             if args.bpm and args.range:
                 try:
                     bpm = track.bpm
@@ -80,8 +80,10 @@ def main():
     print "* A {:5} track can be mixed into any of {:3} other tracks.".format(
         most[0], most[1])
 
+    print
+
     print mc.keys_with_option_counts
-    
+
 if __name__ == '__main__':
     main()
 
