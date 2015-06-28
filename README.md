@@ -23,6 +23,6 @@ python key_balancer.py "C:\Users\my_username\mp3"
 
 You can also limit the search only to files within a specific BPM range:
 ```
-python key_balancer.py ~/mp3 --bpm=125 --range=2 # matches 123 bpm to 127 bpm
-python key_balancer.py ~/mp3 --bpm=128 --range=4 # matches 124 bpm to 132 bpm
+python key_balancer.py ~/mp3 --bpm=125 --range=2  # matches 123 bpm to 127 bpm
+python key_balancer.py ~/mp3 --bpm=128 --range=4  # matches 124 bpm to 132 bpm
 ```
