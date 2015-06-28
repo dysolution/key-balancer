@@ -4,6 +4,7 @@ MINOR_KEYS = ['G#min', 'D#min', 'A#min', 'Fmin', 'Cmin', 'Gmin',
 MAJOR_KEYS = ['Bmaj', 'F#maj', 'C#maj', 'G#maj', 'D#maj', 'A#maj',
               'Fmaj', 'Cmaj', 'Gmaj', 'Dmaj', 'Amaj', 'Emaj']
 
+
 class NullKey(object):
 
     def __str__(self):
@@ -38,6 +39,13 @@ class Key(object):
         else:
             raise AttributeError(
                 "couldn't determine key quality: {}".format(self.key))
+
+    def can_be_followed_with(self, other):
+        if other.key in [self.key, self.relative,
+                         self.up_fifth, self.down_fifth]:
+            return True
+        else:
+            return False
 
     @property
     def up_fifth(self):
@@ -101,4 +109,3 @@ class KeyFactory(object):
     @classmethod
     def _is_valid(self, key):
         return key in MINOR_KEYS + MAJOR_KEYS
-

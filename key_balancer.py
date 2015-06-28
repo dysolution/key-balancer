@@ -7,6 +7,7 @@ from operator import itemgetter
 
 from exceptions import *
 from key import KeyFactory
+from music_collection import MusicCollection
 from track import *
 
 
@@ -14,19 +15,7 @@ def should_ignore(filename):
     return os.path.splitext(filename)[1].lower() != '.mp3'
 
 
-def candidates(key_counts):
-    candidate_counts = {}
-    for name in key_counts.keys():
-        candidate_counts[name] = num_candidates(key_counts, name)
-    return candidate_counts
-
-def fewest_candidates(key_counts):
-    return sorted(candidates(key_counts).iteritems(), key=itemgetter(1))
-
-
-
-
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(
         description=(
             'Analyze all of the MP3s in a collection and report which '
@@ -37,9 +26,13 @@ def main():
     parser.add_argument('--range', type=int)
     parser.add_argument('--verbose', action='store_true',
                         help='list all appropriate tracks')
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    keys_found = defaultdict(int)
+
+def main():
+    args = parse_args()
+
+    mc = MusicCollection()
 
     for dirpath, dirnames, filenames in os.walk(args.base_path):
         for filename in filenames:
@@ -61,24 +54,21 @@ def main():
             if args.bpm and args.range:
                 try:
                     bpm = track.bpm
-                    if not track.tempo_compatible(
-                            args.bpm, args.range):
+                    if not track.tempo_compatible(args.bpm, args.range):
                         continue
                 except BpmNotFound:
                     print "no BPM: {}".format(full_path)
                     continue
-            keys_found[str(key)] += 1
+            mc.add_track(track)
             if args.verbose:
                 print str(track)
 
-    track_count = sum(keys_found.values())
     print "\n==== SUMMARY ===="
-    print "* {} tracks found to evaluate.".format(track_count)
-    if track_count == 0:
+    print "* {} tracks found to evaluate.".format(len(mc))
+    if len(mc) == 0:
         sys.exit(1)
 
-
-    mixing_options = fewest_candidates(keys_found)
+    mixing_options = mc.sorted_with_next_track_counts
     fewest = mixing_options[0]
     most = mixing_options[-1]
 
@@ -89,11 +79,9 @@ def main():
         fewest[0], fewest[1])
     print "* A {:5} track can be mixed into any of {:3} other tracks.".format(
         most[0], most[1])
-    print "\n"
-    print "\n".join(["{}: {}".format(key[0], key[1])
-            for key in mixing_options])
 
-
+    print mc.keys_with_option_counts
+    
 if __name__ == '__main__':
     main()
 

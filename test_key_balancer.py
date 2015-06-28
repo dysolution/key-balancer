@@ -1,6 +1,7 @@
 import unittest
 
 from key import *
+from music_collection import *
 
 
 class TestKeyFactory(unittest.TestCase):
@@ -19,6 +20,18 @@ class TestKeyFactory(unittest.TestCase):
 
 
 class TestKey(unittest.TestCase):
+
+    def test_can_be_followed_with(self):
+        k1 =  Key('Amin')
+        self.assertTrue(k1.can_be_followed_with(Key('Emin')))
+        self.assertTrue(k1.can_be_followed_with(Key('Dmin')))
+        self.assertTrue(k1.can_be_followed_with(Key('Cmaj')))
+        self.assertTrue(k1.can_be_followed_with(Key('Amin')))
+
+        self.assertFalse(k1.can_be_followed_with(Key('Fmin')))
+        self.assertFalse(k1.can_be_followed_with(Key('D#min')))
+        self.assertFalse(k1.can_be_followed_with(Key('Cmin')))
+    
     def test_up_fifth(self):
         self.assertEqual(Key('Amin').up_fifth, 'Emin')
         self.assertEqual(Key('Dmin').up_fifth, 'Amin')
@@ -39,6 +52,7 @@ class TestKey(unittest.TestCase):
         self.assertEqual(Key('Emaj').quality, 'major')
         with self.assertRaises(AttributeError):
             Key('invalid').quality
+
 
 @unittest.skip('file IO')
 class TestKeyBalancer(unittest.TestCase):
@@ -75,3 +89,25 @@ class TestKeyBalancer(unittest.TestCase):
         self.assertTrue(self.mp3.tempo_compatible(122, 2))
         self.assertTrue(self.mp3.tempo_compatible(125, 3))
         self.assertFalse(self.mp3.tempo_compatible(120, 2))
+
+
+class FakeTrack(object):
+    @property
+    def key(self):
+        return 'Amin'
+
+
+class TestMusicCollection(unittest.TestCase):
+    def setUp(self):
+        self.mc = MusicCollection()
+
+    def tearDown(self):
+        self.mc = None
+
+    def test_add_track(self):
+        self.assertEqual(len(self.mc), 0)
+        self.assertEqual(self.mc.count_for['Amin'], 0)
+
+        self.mc.add_track(FakeTrack())
+        self.assertEqual(len(self.mc), 1)
+        self.assertEqual(self.mc.count_for['Amin'], 1)
