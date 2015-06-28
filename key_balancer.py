@@ -10,13 +10,8 @@ from key import KeyFactory
 from track import *
 
 
-def num_candidates(key_counts, starting_key):
-    key = KeyFactory.new(starting_key)
-    same_key = key_counts[starting_key] - 1
-    higher = key_counts.get(key.up_fifth, 0)
-    lower = key_counts.get(key.down_fifth, 0)
-    relative = key_counts.get(key.relative, 0)
-    return same_key + higher + lower
+def should_ignore(filename):
+    return os.path.splitext(filename)[1].lower() != '.mp3'
 
 
 def candidates(key_counts):
@@ -48,8 +43,9 @@ def main():
 
     for dirpath, dirnames, filenames in os.walk(args.base_path):
         for filename in filenames:
-            if os.path.splitext(filename)[1].lower() != '.mp3':
+            if should_ignore(filename):
                 continue
+
             full_path = os.path.join(dirpath, filename)
             try:
                 track = Track(full_path)
