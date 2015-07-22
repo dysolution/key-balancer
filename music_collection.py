@@ -13,6 +13,7 @@ class MusicCollection(list):
         self.count_for = {}
         for key in MINOR_KEYS + MAJOR_KEYS:
             self.count_for[key] = 0
+        self.tempos = defaultdict(int)
 
     def __len__(self):
         return sum(self.count_for.values())
@@ -20,6 +21,10 @@ class MusicCollection(list):
     def add_track(self, track):
         self.append(track)
         self.count_for[str(KeyFactory.new(track.key))] += 1
+        try:
+            self.tempos[track.bpm] += 1
+        except AttributeError:
+            pass
 
     def suitable_next_track_count(self, key):
         _key = KeyFactory.new(key)
@@ -35,6 +40,20 @@ class MusicCollection(list):
             if self.count_for[key] > 0:
                 candidates = self.suitable_next_track_count(key)
                 print "{:>3} {:5} tracks can be mixed into {:>3} other tracks: {}".format(self.count_for[key], key, candidates, GRAPH_CHAR * candidates)
+
+    @property
+    def keys_with_counts(self):
+        for key, count in self.sorted_keys:
+            print "{:>3} {:5} tracks: {}".format(count, key, GRAPH_CHAR * count)
+
+    @property
+    def tempos_with_counts(self):
+        for tempo, count in self.sorted_tempos:
+            print "{:>3} {:5}bpm tracks: {}".format(count, tempo, GRAPH_CHAR * count)
+
+    @property
+    def sorted_tempos(self):
+        return sorted(self.tempos.iteritems(), key=itemgetter(1))
 
     @property
     def sorted_keys(self):

@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import argparse
 import os
 import sys
@@ -28,6 +30,32 @@ def parse_args():
                         help='list all appropriate tracks')
     return parser.parse_args()
 
+def tempo_was_specified(args):
+    return args.bpm and args.range
+
+
+def report(music_collection, args):
+    print "\n==== SUMMARY ===="
+    print "* {} tracks found to evaluate.".format(len(music_collection))
+    if len(music_collection) == 0:
+        sys.exit(1)
+
+    mixing_options = music_collection.sorted_with_next_track_counts
+    fewest = mixing_options[0]
+    most = mixing_options[-1]
+
+    if tempo_was_specified(args):
+        print "* Tempos are between {} bpm and {} bpm.".format(
+                args.bpm - args.range, args.bpm + args.range)
+    print "* A {:5} track can be mixed into only   {:3} other tracks.".format(
+        fewest[0], fewest[1])
+    print "* A {:5} track can be mixed into any of {:3} other tracks.".format(
+        most[0], most[1])
+    print
+    print music_collection.keys_with_option_counts
+    print music_collection.keys_with_counts
+    print music_collection.tempos_with_counts
+
 
 def main():
     args = parse_args()
@@ -42,7 +70,8 @@ def main():
             full_path = os.path.join(dirpath, filename)
             try:
                 track = Track(full_path)
-            except IOError:
+            except IOError, e:
+                print "{} for {}".format(e.msg, full_path)
                 continue
 
             try:
@@ -51,7 +80,7 @@ def main():
                 print "key missing from metadata for {}".format(full_path)
                 continue
 
-            if args.bpm and args.range:
+            if tempo_was_specified(args):
                 try:
                     bpm = track.bpm
                     if not track.tempo_compatible(args.bpm, args.range):
@@ -63,26 +92,7 @@ def main():
             if args.verbose:
                 print str(track)
 
-    print "\n==== SUMMARY ===="
-    print "* {} tracks found to evaluate.".format(len(mc))
-    if len(mc) == 0:
-        sys.exit(1)
-
-    mixing_options = mc.sorted_with_next_track_counts
-    fewest = mixing_options[0]
-    most = mixing_options[-1]
-
-    if args.bpm and args.range:
-        print "* Tempos are between {} bpm and {} bpm.".format(
-                args.bpm - args.range, args.bpm + args.range)
-    print "* A {:5} track can be mixed into only   {:3} other tracks.".format(
-        fewest[0], fewest[1])
-    print "* A {:5} track can be mixed into any of {:3} other tracks.".format(
-        most[0], most[1])
-
-    print
-
-    print mc.keys_with_option_counts
+    report(mc, args)
 
 if __name__ == '__main__':
     main()
