@@ -28,6 +28,8 @@ def parse_args():
     parser.add_argument('--range', type=int)
     parser.add_argument('--verbose', action='store_true',
                         help='list all appropriate tracks')
+    parser.add_argument('--exclude-major', action='store_true',
+                        help='exclude tracks with major keys')
     return parser.parse_args()
 
 def tempo_was_specified(args):
@@ -60,7 +62,7 @@ def report(music_collection, args):
 def main():
     args = parse_args()
 
-    mc = MusicCollection()
+    mc = MusicCollection(exclude_major=args.exclude_major)
 
     for dirpath, dirnames, filenames in os.walk(args.base_path):
         for filename in filenames:
